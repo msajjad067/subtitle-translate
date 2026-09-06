@@ -41,6 +41,8 @@ Translating subtitles is tedious and expensive:
 5. (Optional) Toggle **Merge short split sentences** or **Extend short subtitles**
 6. Click **Translate**
 7. Click **Download Translated SRT**
+8. OR OPEN https://msajjad067.github.io/subtitle-translate/
+and use it.
 
 ## ⚙️ Configuration
 
