@@ -1,20 +1,35 @@
 // ============================================
-// SRT Translator - App Logic (Optimized Edition)
+// SRT Translator - App Logic (9router Optimized Edition)
 // ============================================
 
+const DEFAULT_MODEL_9ROUTER = 'default'; // یا نام مدلی که در 9router تنظیم کرده‌اید
 const DEFAULT_MODEL_GEMINI = 'gemini-1.5-flash';
-const DEFAULT_MODEL_OPENROUTER = 'google/gemini-1.5-flash';
 const DEFAULT_MODEL_OPENAI = 'gpt-4-turbo';
-const DEFAULT_MODEL_CUSTOM = 'gpt-3.5-turbo';
-const DEFAULT_PARALLEL = 5;
+const DEFAULT_PARALLEL = 3;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
-const REQUEST_TIMEOUT_MS = 45000;
+const REQUEST_TIMEOUT_MS = 60000;
 
 // ============================================
 // PRESET API CONFIGURATIONS
 // ============================================
 const API_PRESETS = {
+    '9router': {
+        name: '9router (Local Gateway)',
+        endpoint: 'http://localhost:20128/v1/chat/completions', // پورت پیش‌فرض رایج 9router (قابل تغییر در فیلد زیرین)
+        type: 'openai-compatible',
+        defaultModel: DEFAULT_MODEL_9ROUTER,
+        keyPlaceholder: 'API key (leave empty if not required by 9router)...',
+        docs: ''
+    },
+    'openrouter': {
+        name: 'OpenRouter',
+        endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+        type: 'openai-compatible',
+        defaultModel: 'google/gemini-2.5-flash',
+        keyPlaceholder: 'Enter your OpenRouter API key...',
+        docs: 'https://openrouter.ai'
+    },
     'gemini': {
         name: 'Google AI Studio (Gemini)',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
@@ -22,14 +37,6 @@ const API_PRESETS = {
         defaultModel: DEFAULT_MODEL_GEMINI,
         keyPlaceholder: 'Enter your Gemini API key...',
         docs: 'https://ai.google.dev'
-    },
-    'openrouter': {
-        name: 'OpenRouter',
-        endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-        type: 'openai-compatible',
-        defaultModel: DEFAULT_MODEL_OPENROUTER,
-        keyPlaceholder: 'Enter your OpenRouter API key...',
-        docs: 'https://openrouter.ai'
     },
     'openai': {
         name: 'OpenAI (ChatGPT)',
@@ -39,14 +46,6 @@ const API_PRESETS = {
         keyPlaceholder: 'Enter your OpenAI API key...',
         docs: 'https://openai.com/api'
     },
-    'groq': {
-        name: 'Groq (Fast Inference)',
-        endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-        type: 'openai-compatible',
-        defaultModel: 'mixtral-8x7b-32768',
-        keyPlaceholder: 'Enter your Groq API key...',
-        docs: 'https://console.groq.com'
-    },
     'ollama': {
         name: 'Ollama (Local)',
         endpoint: 'http://localhost:11434/v1/chat/completions',
@@ -55,27 +54,11 @@ const API_PRESETS = {
         keyPlaceholder: 'API key (leave empty for local)...',
         docs: 'https://ollama.ai'
     },
-    'lm-studio': {
-        name: 'LM Studio (Local)',
-        endpoint: 'http://localhost:1234/v1/chat/completions',
-        type: 'openai-compatible',
-        defaultModel: 'local-model',
-        keyPlaceholder: 'API key (leave empty for local)...',
-        docs: 'https://lmstudio.ai'
-    },
-    'claude': {
-        name: 'Anthropic Claude',
-        endpoint: 'https://api.anthropic.com/v1/messages',
-        type: 'anthropic',
-        defaultModel: 'claude-3-5-sonnet-20241022',
-        keyPlaceholder: 'Enter your Anthropic API key...',
-        docs: 'https://console.anthropic.com'
-    },
     'custom': {
         name: 'Custom OpenAI Compatible',
         endpoint: '',
         type: 'openai-compatible',
-        defaultModel: DEFAULT_MODEL_CUSTOM,
+        defaultModel: 'gpt-3.5-turbo',
         keyPlaceholder: 'Enter your API key...',
         docs: ''
     }
@@ -158,8 +141,12 @@ function updateProviderUI() {
     elements.apiKey.placeholder = preset.keyPlaceholder;
     elements.customModel.placeholder = `Custom model (default: ${preset.defaultModel})`;
     
-    if (provider === 'custom') {
+    // برای 9router و custom اجازه می‌دهیم endpoint قابل ویرایش یا رویت باشد
+    if (provider === 'custom' || provider === '9router') {
         elements.customApiEndpointRow.classList.remove('hidden');
+        if (provider === '9router' && !elements.customApiEndpoint.value) {
+            elements.customApiEndpoint.value = preset.endpoint;
+        }
     } else {
         elements.customApiEndpointRow.classList.add('hidden');
         elements.customApiEndpoint.value = preset.endpoint;
@@ -168,7 +155,7 @@ function updateProviderUI() {
     if (elements.apiProviderInfo) {
         elements.apiProviderInfo.innerHTML = `
             <strong>${preset.name}</strong><br>
-            <small>Type: ${preset.type === 'openai-compatible' ? 'OpenAI Compatible' : preset.type.toUpperCase()}</small>
+            <small>Type: ${preset.type === 'openai-compatible' ? 'OpenAI Compatible Gateway' : preset.type.toUpperCase()}</small>
             ${preset.docs ? `<br><a href="${preset.docs}" target="_blank" style="color: var(--accent-primary); text-decoration: none;">Documentation ↗</a>` : ''}
         `;
     }
@@ -187,7 +174,7 @@ function loadSavedSettings() {
     const savedCustomEndpoint = localStorage.getItem('srt_custom_api_endpoint');
 
     if (savedProvider) elements.apiProvider.value = savedProvider;
-    else elements.apiProvider.value = 'openai';
+    else elements.apiProvider.value = '9router'; // پیش‌فرض روی 9router
 
     if (savedApiKey) elements.apiKey.value = savedApiKey.trim();
     if (savedModel) elements.customModel.value = savedModel.trim();
@@ -217,7 +204,7 @@ function saveSettings() {
     localStorage.setItem('srt_optimize_timings', elements.optimizeTimings.checked);
     localStorage.setItem('srt_merge_subtitles', elements.mergeSubtitles.checked);
     
-    if (provider === 'custom') {
+    if (provider === 'custom' || provider === '9router') {
         localStorage.setItem('srt_custom_api_endpoint', elements.customApiEndpoint.value.trim());
     }
 }
@@ -338,7 +325,8 @@ function parseSRT(content) {
 // ============================================
 
 function updateTranslateButton() {
-    const hasApiKey = elements.apiKey.value.trim().length > 0 || elements.apiProvider.value === 'ollama' || elements.apiProvider.value === 'lm-studio';
+    const provider = elements.apiProvider.value;
+    const hasApiKey = elements.apiKey.value.trim().length > 0 || provider === '9router' || provider === 'ollama' || provider === 'lm-studio';
     const hasFile = srtBlocks.length > 0;
     elements.translateBtn.disabled = !(hasApiKey && hasFile);
 }
@@ -392,13 +380,13 @@ function updateChunkStatus(index, status) {
 }
 
 // ============================================
-// Translation & API Handlers
+// Translation & API Handlers (9router Gateway)
 // ============================================
 
 function buildSystemPrompt(targetLanguage, customInstructions) {
     let prompt = `You are an expert subtitle translator. Translate the given subtitle blocks accurately and naturally to ${targetLanguage}.\n\n`;
     prompt += `Rules:\n`;
-    prompt += `1. Keep the exact meaning and tone.\n`;
+    prompt += `1. Keep the exact meaning, nuance, and tone.\n`;
     prompt += `2. Keep texts concise to fit screen limits.\n`;
     prompt += `3. Each block is wrapped with [B0], [B1], etc. Translate ONLY the text inside/between markers and DO NOT remove or alter the markers.\n`;
     
@@ -506,8 +494,8 @@ async function translateChunk(chunk, index, apiKey, model, targetLanguage, custo
             });
         } else if (preset.type === 'openai-compatible') {
             let endpoint = preset.endpoint;
-            if (provider === 'custom') {
-                endpoint = elements.customApiEndpoint.value.trim();
+            if (provider === 'custom' || provider === '9router') {
+                endpoint = elements.customApiEndpoint.value.trim() || preset.endpoint;
             }
             
             if (!endpoint) {
@@ -520,11 +508,6 @@ async function translateChunk(chunk, index, apiKey, model, targetLanguage, custo
             
             if (apiKey) {
                 headers['Authorization'] = `Bearer ${apiKey.trim()}`;
-            }
-
-            if (provider === 'openrouter') {
-                headers['HTTP-Referer'] = window.location.origin || 'https://github.com';
-                headers['X-Title'] = 'SRT Translator';
             }
 
             response = await fetch(endpoint, {
@@ -602,7 +585,7 @@ async function startTranslation() {
     const chunkSize = parseInt(elements.chunkSize.value) || 20;
     const maxParallel = parseInt(elements.parallelRequests.value) || 3;
 
-    if (!apiKey && provider !== 'ollama' && provider !== 'lm-studio') {
+    if (!apiKey && provider !== '9router' && provider !== 'ollama' && provider !== 'lm-studio') {
         log('Please enter your API key', 'error');
         return;
     }
