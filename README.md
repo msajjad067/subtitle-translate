@@ -315,9 +315,9 @@ License: [Original Project License]
 
 ```bash
 # 1. Replace the files
-cp app-customizable-api.js src/app.js
-cp index-customizable-api.html index.html
-cp styles-updated.css src/styles.css
+cp app.js src/app.js
+cp index.html index.html
+cp styles.css src/styles.css
 
 # 2. Open the application
 open index.html
