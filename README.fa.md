@@ -2,8 +2,7 @@
 
 ## 🎉 خلاصه تغییرات
 
-پروژه **Subtitle-Translator** شما کاملاً بهبود یافته است و اکنون از **OpenAI Compatible APIs** پشتیبانی می‌کند!
-
+پروژه **Subtitle-Translator** کاملاً بهبود یافته است و اکنون از **OpenAI Compatible APIs** پشتیبانی می‌کند
 ### ✨ ویژگی های جدید:
 
 ```
@@ -16,21 +15,11 @@
 ✅ RTL Language Support (Arabic, Persian)
 ```
 
----
-
-## 📦 فایل های شامل شده:
-
-```
-📄 app-customizable-api.js      ← JavaScript جدید (کار اصلی)
-📄 index-customizable-api.html  ← HTML جدید (Interface)
-📄 styles-updated.css           ← CSS بهبود یافته (Styling)
-
-📚 INSTALLATION_GUIDE_FA.md     ← راهنمای نصب (شروع از اینجا!)
-📚 SETUP_GUIDE_FA.md            ← راهنمای تفصیلی
-📚 API_EXAMPLES.md              ← مثال های عملی
-```
 
 ---
+شما می توانید از این آدرس استفاده کنید:
+http://msajjad067.github.io/subtitle-translate
+یا
 
 ## 🚀 شروع سریع (3 مرحله):
 
@@ -41,9 +30,9 @@
 cd your-subtitle-translator
 
 # فایل های جدید را قرار دهید:
-cp app-customizable-api.js src/app.js
-cp index-customizable-api.html index.html
-cp styles-updated.css src/styles.css
+cp app.js src/app.js
+cp index.html index.html
+cp styles.css src/styles.css
 ```
 
 ### **2️⃣ باز کردن در مرورگر:**
@@ -254,18 +243,6 @@ Memory: 8GB+ (بهتر)
 🌐 Support for Local & Cloud Models
 ```
 
----
-
-## 🎓 مطالعه بیشتر:
-
-- [INSTALLATION_GUIDE_FA.md](INSTALLATION_GUIDE_FA.md) - راهنمای نصب مفصل
-- [SETUP_GUIDE_FA.md](SETUP_GUIDE_FA.md) - تمام تنظیمات و نکات
-- [API_EXAMPLES.md](API_EXAMPLES.md) - مثال های عملی برای هر API
-
----
-
-## 🚀 بعدی:
-
 ```
 ✨ به‌زودی:
   - Batch Processing
@@ -292,9 +269,9 @@ License: [Original Project License]
 
 ```bash
 # 1. فایل ها جایگزین کن
-cp app-customizable-api.js src/app.js
-cp index-customizable-api.html index.html
-cp styles-updated.css src/styles.css
+cp app.js src/app.js
+cp index.html index.html
+cp styles.css src/styles.css
 
 # 2. مرورگر باز کن
 open index.html
@@ -308,5 +285,3 @@ open index.html
 ---
 
 **Happy Translating! 🚀**
-
-برای سوالات بیشتر به [SETUP_GUIDE_FA.md](SETUP_GUIDE_FA.md) مراجعه کن.
