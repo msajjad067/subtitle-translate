@@ -1,13 +1,12 @@
 // ============================================
-// SRT Translator - App Logic (9router Optimized Edition)
+// SRT Translator - App Logic (9router & OpenAI Compatible Optimized)
 // ============================================
 
-const DEFAULT_MODEL_9ROUTER = 'default'; // یا نام مدلی که در 9router تنظیم کرده‌اید
-const DEFAULT_MODEL_GEMINI = 'gemini-1.5-flash';
+const DEFAULT_MODEL_9ROUTER = 'default';
 const DEFAULT_MODEL_OPENAI = 'gpt-4-turbo';
 const DEFAULT_PARALLEL = 3;
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 1000;
+const RETRY_DELAY_MS = 1500;
 const REQUEST_TIMEOUT_MS = 60000;
 
 // ============================================
@@ -16,7 +15,7 @@ const REQUEST_TIMEOUT_MS = 60000;
 const API_PRESETS = {
     '9router': {
         name: '9router (Local Gateway)',
-        endpoint: 'http://localhost:20128/v1/chat/completions', // پورت پیش‌فرض رایج 9router (قابل تغییر در فیلد زیرین)
+        endpoint: 'http://localhost:20128/v1/chat/completions',
         type: 'openai-compatible',
         defaultModel: DEFAULT_MODEL_9ROUTER,
         keyPlaceholder: 'API key (leave empty if not required by 9router)...',
@@ -29,14 +28,6 @@ const API_PRESETS = {
         defaultModel: 'google/gemini-2.5-flash',
         keyPlaceholder: 'Enter your OpenRouter API key...',
         docs: 'https://openrouter.ai'
-    },
-    'gemini': {
-        name: 'Google AI Studio (Gemini)',
-        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
-        type: 'gemini',
-        defaultModel: DEFAULT_MODEL_GEMINI,
-        keyPlaceholder: 'Enter your Gemini API key...',
-        docs: 'https://ai.google.dev'
     },
     'openai': {
         name: 'OpenAI (ChatGPT)',
@@ -53,6 +44,14 @@ const API_PRESETS = {
         defaultModel: 'mistral',
         keyPlaceholder: 'API key (leave empty for local)...',
         docs: 'https://ollama.ai'
+    },
+    'lm-studio': {
+        name: 'LM Studio (Local)',
+        endpoint: 'http://localhost:1234/v1/chat/completions',
+        type: 'openai-compatible',
+        defaultModel: 'local-model',
+        keyPlaceholder: 'API key (leave empty for local)...',
+        docs: 'https://lmstudio.ai'
     },
     'custom': {
         name: 'Custom OpenAI Compatible',
@@ -141,7 +140,6 @@ function updateProviderUI() {
     elements.apiKey.placeholder = preset.keyPlaceholder;
     elements.customModel.placeholder = `Custom model (default: ${preset.defaultModel})`;
     
-    // برای 9router و custom اجازه می‌دهیم endpoint قابل ویرایش یا رویت باشد
     if (provider === 'custom' || provider === '9router') {
         elements.customApiEndpointRow.classList.remove('hidden');
         if (provider === '9router' && !elements.customApiEndpoint.value) {
@@ -174,7 +172,7 @@ function loadSavedSettings() {
     const savedCustomEndpoint = localStorage.getItem('srt_custom_api_endpoint');
 
     if (savedProvider) elements.apiProvider.value = savedProvider;
-    else elements.apiProvider.value = '9router'; // پیش‌فرض روی 9router
+    else elements.apiProvider.value = '9router';
 
     if (savedApiKey) elements.apiKey.value = savedApiKey.trim();
     if (savedModel) elements.customModel.value = savedModel.trim();
@@ -380,7 +378,7 @@ function updateChunkStatus(index, status) {
 }
 
 // ============================================
-// Translation & API Handlers (9router Gateway)
+// Translation & API Handlers (Optimized Request Logic)
 // ============================================
 
 function buildSystemPrompt(targetLanguage, customInstructions) {
@@ -388,7 +386,7 @@ function buildSystemPrompt(targetLanguage, customInstructions) {
     prompt += `Rules:\n`;
     prompt += `1. Keep the exact meaning, nuance, and tone.\n`;
     prompt += `2. Keep texts concise to fit screen limits.\n`;
-    prompt += `3. Each block is wrapped with [B0], [B1], etc. Translate ONLY the text inside/between markers and DO NOT remove or alter the markers.\n`;
+    prompt += `3. Each block is wrapped with markers like [B0], [B1], etc. Translate ONLY the text inside/between markers and DO NOT remove or alter the markers.\n`;
     
     if (customInstructions.trim()) {
         prompt += `4. Additional Instructions: ${customInstructions}\n`;
@@ -506,22 +504,24 @@ async function translateChunk(chunk, index, apiKey, model, targetLanguage, custo
                 'Content-Type': 'application/json'
             };
             
-            if (apiKey) {
+            if (apiKey && apiKey.trim() !== '') {
                 headers['Authorization'] = `Bearer ${apiKey.trim()}`;
             }
+
+            // ساختار کاملاً استاندارد برای OpenAI Compatible و 9router
+            const requestBody = {
+                model: model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: markedText }
+                ],
+                temperature: 0.3
+            };
 
             response = await fetch(endpoint, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({
-                    model: model,
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        { role: 'user', content: markedText }
-                    ],
-                    temperature: 0.3,
-                    max_tokens: 4096
-                }),
+                body: JSON.stringify(requestBody),
                 signal: controller.signal
             });
         }
