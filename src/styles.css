@@ -359,49 +359,9 @@ h1 {
 .log-error { color: var(--error); }
 .log-info { color: var(--accent-primary); }
 
-/* Responsive */
 @media (max-width: 640px) {
-    body {
-        padding: 1rem;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    .settings-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
-    }
-
-    .stat {
-        padding: 0.75rem 0.5rem;
-    }
-
-    .stat-value {
-        font-size: 1.25rem;
-    }
-}
-
-/* Scrollbar styling */
-.log-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.log-container::-webkit-scrollbar-track {
-    background: var(--bg-tertiary);
-    border-radius: 10px;
-}
-
-.log-container::-webkit-scrollbar-thumb {
-    background: var(--accent-primary);
-    border-radius: 3px;
-}
-
-.log-container::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-secondary);
+    body { padding: 1rem; }
+    h1 { font-size: 1.75rem; }
+    .settings-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 }
