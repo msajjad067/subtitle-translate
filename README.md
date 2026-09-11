@@ -1,4 +1,6 @@
-# SRT Translator - OpenAI Compatible Edition
+[🇬🇧 English](README.md) | [🇮🇷 فارسی](README.fa.md)
+
+# SRT Translator - OpenAI Compatible Edition 
 
 ## 🎉 What's New
 
