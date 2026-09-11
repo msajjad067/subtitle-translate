@@ -20,6 +20,10 @@ The **Subtitle-Translator** project has been significantly improved and now supp
 
 ## 🚀 Quick Start (3 Steps)
 
+you can use it on: http://msajjad067.github.io/subtitle-translate
+
+or
+
 ### **1️⃣ Replace the Files**
 
 ```bash
@@ -27,9 +31,9 @@ The **Subtitle-Translator** project has been significantly improved and now supp
 cd your-subtitle-translator
 
 # Replace the files with the new versions:
-cp app-customizable-api.js src/app.js
-cp index-customizable-api.html index.html
-cp styles-updated.css src/styles.css
+cp app.js src/app.js
+cp index.html index.html
+cp styles.css src/styles.css
 ```
 
 ### **2️⃣ Open It in Your Browser**
@@ -280,17 +284,7 @@ https://github.com/AmiraliNotFound/better-ai-srt-translation
 📚 Multiple LLM provider integration
 🔧 Customizable endpoints
 🌐 Support for local and cloud models
-```
-
----
-
-## 🎓 Further Reading
-
-- `INSTALLATION_GUIDE_FA.md` — Installation guide
-- `SETUP_GUIDE_FA.md` — Detailed setup and configuration
-- `API_EXAMPLES.md` — Practical examples for different APIs
-
----
+``
 
 ## 🚀 Roadmap
 
