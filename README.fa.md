@@ -1,3 +1,5 @@
+[🇬🇧 English](README.md) | [🇮🇷 فارسی](README.fa.md)
+
 # SRT Translator - نسخه OpenAI Compatible
 
 ## 🎉 خلاصه تغییرات
