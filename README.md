@@ -332,5 +332,3 @@ open index.html
 
 **Happy Translating! 🚀**
 
-For more information, see `SETUP_GUIDE_FA.md`.
-
