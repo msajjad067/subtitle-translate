@@ -18,20 +18,6 @@ The **Subtitle-Translator** project has been significantly improved and now supp
 
 ---
 
-## 📦 Included Files
-
-```text
-📄 app-customizable-api.js      ← New JavaScript application
-📄 index-customizable-api.html  ← New HTML interface
-📄 styles-updated.css           ← Improved CSS styling
-
-📚 INSTALLATION_GUIDE_FA.md     ← Installation guide
-📚 SETUP_GUIDE_FA.md            ← Detailed setup guide
-📚 API_EXAMPLES.md              ← Practical API examples
-```
-
----
-
 ## 🚀 Quick Start (3 Steps)
 
 ### **1️⃣ Replace the Files**
